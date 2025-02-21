@@ -12,8 +12,8 @@ ENV HOST=0.0.0.0
 ENV PORT=3000 
 ENV NODE_ENV=production
 ENV NEXTAUTH_SECRET="randomsecret"
-ENV NEXTAUTH_URL=http://localhost:3000
-ENV NEXT_PUBLIC_API_URL=http://localhost:3000/api
+ENV NEXTAUTH_URL=https://desafio.leonardo-reis.com/
+ENV NEXT_PUBLIC_API_URL=https://desafio.leonardo-reis.com//api
 
 RUN npx prisma generate
 RUN npm run build
