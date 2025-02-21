@@ -210,7 +210,7 @@ export default function Page() {
 
   return (
     <>
-      <DeleteCustomerAlert />
+      <DeleteCustomerAlert handleDelete={() => table.setRowSelection({})} />
       <div className="w-full">
         <div className="max-md:inline hidden">
           <SidebarTrigger />

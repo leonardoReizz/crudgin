@@ -17,9 +17,10 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
   trigger?: ReactNode;
+  handleDelete?: () => void;
 }
 
-export function DeleteCustomerAlert({ trigger }: Props) {
+export function DeleteCustomerAlert({ trigger, handleDelete }: Props) {
   const { isOpen, onClose, customers } = useDeleteCustomer();
   const queryClient = useQueryClient();
 
@@ -44,6 +45,7 @@ export function DeleteCustomerAlert({ trigger }: Props) {
           : "Cliente deletado",
       );
       onClose();
+      handleDelete?.();
     },
     onError: (error) => {
       toast.error(error?.message);
