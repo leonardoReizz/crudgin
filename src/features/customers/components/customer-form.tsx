@@ -8,9 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { createCustomerSchema } from "../schema/schema";
 import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -122,6 +120,9 @@ export function CustomerForm({ form, onSubmit, isPending }: Props) {
                         selected={field.value}
                         onSelect={(v) => field.onChange(v)}
                         initialFocus
+                        fromYear={1950}
+                        toYear={2022}
+                        captionLayout="dropdown"
                       />
                     </PopoverContent>
                   </Popover>
