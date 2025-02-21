@@ -22,7 +22,7 @@ Este projeto é um CRUD de cadastro de clientes utilizando Next.js no backend e 
 #### Como Rodar o Projeto
 Pré-requisitos
 - Docker instalado na máquina
-- Node.js 18+ (caso prefira rodar sem Docker)
+- Node.js 20+ (caso prefira rodar sem Docker)
 
 ##### Rodando com Docker
 Clone o repositório:
