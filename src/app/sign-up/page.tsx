@@ -23,45 +23,42 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { signIn } from "next-auth/react";
 import {
-  signInSchema,
-  SignInSchemaType,
-} from "@/features/sign-in/schema/schema";
+  signUpSchema,
+  SignUpSchemaType,
+} from "@/features/sign-up/schema/schema";
 
-export default function Home() {
+export default function Page() {
   const router = useRouter();
+
   const form = useForm({
-    resolver: zodResolver(signInSchema),
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
+      fullName: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   const mutation = useMutation({
-    mutationFn: async (data: SignInSchemaType) => {
-      const response = await signIn("auth-tidi", {
-        redirect: false,
-        email: data.email,
-        password: data.password,
+    mutationFn: async (data: SignUpSchemaType) => {
+      const response = await fetch("/api/auth/sign-up", {
+        method: "POST",
+        body: JSON.stringify(data),
       });
-
-      if (response?.error) {
-        throw new Error(response?.error || "Erro inesperado");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Erro inesperado");
       }
-
-      return response;
+      return response.json();
     },
     onSuccess: () => {
-      router.push("/customers");
+      toast.success("Usuario cadastrado");
+      router.push("/");
     },
     onError: (error) => {
-      if (error.message === "Credenciais invalidas") {
-        form.setError("email", { message: "Email ou senha invalidos" });
-        form.setError("password", { message: "Email ou senha invalidos" });
-      }
-      toast.error(error?.message || "Erro inesperado");
+      toast.error(error?.message);
     },
   });
 
@@ -70,8 +67,8 @@ export default function Home() {
       <Card className="w-full max-w-[350px]">
         <CardHeader className="items-center">
           <Image src="/logo.svg" alt="" width={40} height={40} />
-          <CardTitle className="text-3xl">Login</CardTitle>
-          <CardDescription>Seja bem vindo novamente!</CardDescription>
+          <CardTitle className="text-3xl">Registro</CardTitle>
+          <CardDescription>Crie sua conta</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -81,10 +78,30 @@ export default function Home() {
             >
               <FormField
                 control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Nome Completo<span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Insira seu nome completo"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>
+                      Email<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Insira seu email" {...field} />
                     </FormControl>
@@ -97,7 +114,28 @@ export default function Home() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha</FormLabel>
+                    <FormLabel>
+                      Senha<span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="********"
+                        {...field}
+                        type="password"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Confirme a senha<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="********"
@@ -110,17 +148,18 @@ export default function Home() {
                 )}
               />
               <Button type="submit" isLoading={mutation.isPending}>
-                Entrar
+                Cadastrar-se
               </Button>
             </form>
             <div className="text-sm text-muted-foreground flex gap-1 items-center justify-center mt-4">
-              <p>Ainda nao possui uma conta?</p>
+              <p>Ja possui uma conta?</p>
               <Button
                 variant="link"
                 className="text-primary underline p-0"
-                onClick={() => router.push("/sign-up")}
+                onClick={() => router.push("/")}
+                disabled={mutation.isPending}
               >
-                Clique Aqui
+                Entre agora
               </Button>
             </div>
           </Form>
