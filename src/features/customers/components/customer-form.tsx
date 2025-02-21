@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Form,
   FormControl,
@@ -36,9 +34,9 @@ export function CustomerForm({ form, onSubmit, isPending }: Props) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((v) => onSubmit(v))}
-        className="flex flex-col w-full space-y-4"
+        className="space-y-4"
       >
-        <div className="flex gap-4 w-full">
+        <div className="flex gap-4 w-full max-md:flex-col">
           <FormField
             control={form.control}
             name="name"
@@ -70,7 +68,7 @@ export function CustomerForm({ form, onSubmit, isPending }: Props) {
             )}
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 max-md:flex-col">
           <FormField
             control={form.control}
             name="phone"
@@ -147,7 +145,7 @@ export function CustomerForm({ form, onSubmit, isPending }: Props) {
             </FormItem>
           )}
         />
-        <div className="space-x-4 ml-auto flex">
+        <div className="flex justify-end gap-4">
           <Button
             type="button"
             variant="secondary"
