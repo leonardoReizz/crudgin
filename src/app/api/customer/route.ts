@@ -11,8 +11,15 @@ import { nextAuthOptions } from "../auth/nextAuthOptions";
 
 const prisma = new PrismaClient();
 
+interface CustomSession {
+  user?: {
+    id: string;
+    email: string;
+    fullName: string;
+  };
+}
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(nextAuthOptions);
+  const session = (await getServerSession(nextAuthOptions)) as CustomSession;
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -21,8 +28,13 @@ export async function POST(req: NextRequest) {
     const bodyRequest = await req.json();
     const data = createCustomerSchema.parse(bodyRequest);
     const customer = await prisma.customer.create({
-      data: { ...data, birthDate: data.birthDate.toString() },
+      data: {
+        ...data,
+        birthDate: data.birthDate.toString(),
+        userId: session?.user?.id || "",
+      },
     });
+
     return NextResponse.json({ message: customer }, { status: 201 });
   } catch (error) {
     if (error instanceof ZodError) {
@@ -36,7 +48,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const session = await getServerSession(nextAuthOptions);
+  const session = (await getServerSession(nextAuthOptions)) as CustomSession;
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -62,7 +74,7 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const session = await getServerSession(nextAuthOptions);
+  const session = (await getServerSession(nextAuthOptions)) as CustomSession;
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -87,13 +99,17 @@ export async function DELETE(req: NextRequest) {
 }
 
 export async function GET() {
-  const session = await getServerSession(nextAuthOptions);
+  const session = (await getServerSession(nextAuthOptions)) as CustomSession;
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const customers = await prisma.customer.findMany();
+    const customers = await prisma.customer.findMany({
+      where: {
+        userId: session?.user?.id || "",
+      },
+    });
     return NextResponse.json({ message: customers }, { status: 200 });
   } catch (error) {
     console.log(error);

@@ -39,17 +39,26 @@ export const nextAuthOptions: AuthOptions = {
           throw new Error("Credenciais invalidas");
         }
 
-        return { id: user.id, email: user.email, fullName: user.fullName };
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.fullName,
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      user && (token.user = user);
+      user &&
+        (token.user = {
+          id: user.id,
+          email: user.email,
+          fullName: user.name,
+        });
       return token;
     },
     async session({ session, token }) {
-      session = token.user as any;
+      session.user = token.user as any;
       return session;
     },
   },

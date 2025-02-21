@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
+    console.log(error);
     if (error instanceof ZodError) {
       return NextResponse.json({ message: error }, { status: 400 });
     }
